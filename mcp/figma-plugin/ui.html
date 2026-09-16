@@ -64,12 +64,12 @@
   <body>
     <div class="row">
       <span class="dot" id="dot"></span>
-      <span class="title" id="status">Connecting…</span>
+      <span class="title" id="status">Not connected</span>
     </div>
     <div class="meta">
       <div id="fonts">Reading local fonts…</div>
       <div>Bridge: <code>ws://localhost:3056</code></div>
-      <div>Keep this window open while your agent works.</div>
+      <div id="hint">Open a new assistant session to connect.</div>
     </div>
 
     <script>
@@ -79,10 +79,16 @@
       const statusEl = document.getElementById("status");
       const dotEl = document.getElementById("dot");
       const fontsEl = document.getElementById("fonts");
+      const hintEl = document.getElementById("hint");
 
-      function setStatus(text, connected) {
-        statusEl.textContent = text;
+      // The MCP server only runs while an assistant session runs it, so "not
+      // connected" is the normal idle state — the hint says what to do about it.
+      function setStatus(connected) {
+        statusEl.textContent = connected ? "Connected" : "Not connected";
         dotEl.className = connected ? "dot on" : "dot";
+        hintEl.textContent = connected
+          ? "Keep this window open while your agent works."
+          : "Open a new assistant session to connect.";
       }
 
       function connect() {
@@ -91,7 +97,7 @@
         ws = new WebSocket(WS_URL);
 
         ws.onopen = () => {
-          setStatus("Connected to MCP server", true);
+          setStatus(true);
           if (reconnectTimer) {
             clearInterval(reconnectTimer);
             reconnectTimer = null;
@@ -108,7 +114,7 @@
         };
 
         ws.onclose = () => {
-          setStatus("Waiting for MCP server…", false);
+          setStatus(false);
           ws = null;
           if (!reconnectTimer) reconnectTimer = setInterval(connect, 3000);
         };

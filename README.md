@@ -68,7 +68,7 @@ Cursor, Claude Desktop, or any other MCP client — add this to the MCP config:
 
 **4. Run it**
 
-In Figma: **Plugins → Development → Figma Font Handler**. The panel shows `Connected` and how many font families it can see. Leave it open while you work.
+In Figma: **Plugins → Development → Figma Font Handler**. The panel shows how many font families it can see, and turns green as soon as your assistant is running. In Claude Code that means a **new** session after step 3 — the server starts with the session and stops with it. Leave the panel open while you work.
 
 ## Using it
 
@@ -84,6 +84,8 @@ Text nodes are addressed by their Figma node ID. Your assistant gets those from 
 ## Troubleshooting
 
 **"Unable to load code … ENOENT … code.js"** — the plugin is not built yet, or you imported a manifest from somewhere other than the repo root. Run `npm run build`, then import `manifest.json` from the root again.
+
+**Panel stays red ("Not connected")** — no assistant session is running the server. MCP servers load when a session starts, so open a new one after adding `figma-fonts`. Check the registration with `claude mcp get figma-fonts`.
 
 **"Figma plugin is not connected"** — the plugin window is closed, or you are in the browser. Open the file in Figma Desktop and run the plugin. It reconnects on its own within three seconds.
 
