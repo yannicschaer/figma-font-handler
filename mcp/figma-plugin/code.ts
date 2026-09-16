@@ -4,7 +4,7 @@
 // machine are available. Receives commands from ui.html via postMessage, executes
 // them against the Figma Plugin API, and posts the results back.
 
-figma.showUI(__html__, { visible: true, width: 300, height: 148, title: "Figma Font Handler" });
+figma.showUI(__html__, { visible: true, width: 300, height: 112, title: "Figma Font Handler" });
 
 // ── Types ───────────────────────────────────────────────
 

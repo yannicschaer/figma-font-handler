@@ -124,3 +124,16 @@ check("set_font on selection keeps style mapping",
 
 const unknown = await call("bogus_command", {});
 check("unknown command errors", unknown.success === false, unknown);
+
+// ── Packaging: what Figma actually loads ────────────────
+
+const root = path.join(here, "..");
+const manifest = JSON.parse(fs.readFileSync(path.join(root, "manifest.json"), "utf-8"));
+check("manifest main exists after build", fs.existsSync(path.join(root, manifest.main)), manifest.main);
+check("manifest ui exists after build", fs.existsSync(path.join(root, manifest.ui)), manifest.ui);
+
+const serverPort = (fs.readFileSync(path.join(root, "mcp/src/mcp-server.ts"), "utf-8").match(/WS_PORT = (\d+)/) || [])[1];
+const uiPort = (fs.readFileSync(path.join(root, "mcp/figma-plugin/ui.html"), "utf-8").match(/ws:\/\/localhost:(\d+)/) || [])[1];
+const manifestPort = (manifest.networkAccess.allowedDomains.join(" ").match(/localhost:(\d+)/) || [])[1];
+check("port matches in server, manifest and ui",
+  serverPort && serverPort === uiPort && serverPort === manifestPort, { serverPort, uiPort, manifestPort });

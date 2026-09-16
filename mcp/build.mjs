@@ -30,13 +30,13 @@ const pluginBuild = {
   sourcemap: false,
 };
 
+// The manifest lives in the repo root and points into dist/, so there is exactly
+// one manifest to import — no source/dist mix-up.
 function copyPluginFiles() {
   const pluginDist = path.join(__dirname, "dist/figma-plugin");
   fs.mkdirSync(pluginDist, { recursive: true });
-  for (const file of ["manifest.json", "ui.html"]) {
-    fs.copyFileSync(path.join(__dirname, "figma-plugin", file), path.join(pluginDist, file));
-  }
-  console.log("Copied plugin static files");
+  fs.copyFileSync(path.join(__dirname, "figma-plugin/ui.html"), path.join(pluginDist, "ui.html"));
+  console.log("Copied plugin UI");
 }
 
 async function build() {

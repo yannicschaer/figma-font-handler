@@ -2,8 +2,8 @@
   "name": "Figma Font Handler",
   "id": "1487390215640933127",
   "api": "1.0.0",
-  "main": "code.js",
-  "ui": "ui.html",
+  "main": "mcp/dist/figma-plugin/code.js",
+  "ui": "mcp/dist/figma-plugin/ui.html",
   "documentAccess": "dynamic-page",
   "editorType": [
     "figma",

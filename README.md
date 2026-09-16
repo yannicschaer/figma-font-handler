@@ -43,7 +43,7 @@ npm install && npm run build
 
 **2. Load the plugin in Figma Desktop**
 
-Open any file → **Plugins → Development → Import plugin from manifest…** → pick `mcp/dist/figma-plugin/manifest.json` from this folder.
+Open any file → **Plugins → Development → Import plugin from manifest…** → pick `manifest.json` in the root of this folder.
 
 **3. Connect your assistant**
 
@@ -83,13 +83,15 @@ Text nodes are addressed by their Figma node ID. Your assistant gets those from 
 
 ## Troubleshooting
 
+**"Unable to load code … ENOENT … code.js"** — the plugin is not built yet, or you imported a manifest from somewhere other than the repo root. Run `npm run build`, then import `manifest.json` from the root again.
+
 **"Figma plugin is not connected"** — the plugin window is closed, or you are in the browser. Open the file in Figma Desktop and run the plugin. It reconnects on its own within three seconds.
 
 **A font is listed but will not load** — Figma caches its font list. Quit Figma Desktop completely and reopen it after installing a font. `audit_fonts` reports any font that is listed but fails to load.
 
 **Weights collapse to Regular after a replace** — the target family does not carry that weight. `replace_font` falls back to Regular, and the `mapping` in the result shows exactly what went where.
 
-**Port 3056 in use** — another copy of the server is running. It reclaims the port on its own; if not, quit the other MCP client. To change the port, edit it in both `mcp/src/mcp-server.ts` and `mcp/figma-plugin/{manifest.json,ui.html}`, then rebuild.
+**Port 3056 in use** — another copy of the server is running. It reclaims the port on its own; if not, quit the other MCP client. To change the port, edit it in `mcp/src/mcp-server.ts`, `manifest.json` and `mcp/figma-plugin/ui.html`, then rebuild.
 
 **Text in an instance will not change** — it is locked by the main component. The error names the node; fix it in the component.
 
