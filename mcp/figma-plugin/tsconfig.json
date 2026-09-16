@@ -1,0 +1,11 @@
+{
+  "compilerOptions": {
+    "target": "ES2017",
+    "lib": ["ES2017", "DOM"],
+    "strict": true,
+    "skipLibCheck": true,
+    "types": ["@figma/plugin-typings"],
+    "noEmit": true
+  },
+  "include": ["code.ts"]
+}

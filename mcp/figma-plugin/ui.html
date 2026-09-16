@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <style>
+      :root {
+        --bg: #ffffff;
+        --fg: #1e1e1e;
+        --muted: #8c8c8c;
+        --line: #e6e6e6;
+        --ok: #0d9a5b;
+        --off: #cf4040;
+      }
+      @media (prefers-color-scheme: dark) {
+        :root {
+          --bg: #2c2c2c;
+          --fg: #ffffff;
+          --muted: #9b9b9b;
+          --line: #444444;
+        }
+      }
+      body {
+        font-family: Inter, -apple-system, system-ui, sans-serif;
+        font-size: 11px;
+        line-height: 1.45;
+        color: var(--fg);
+        background: var(--bg);
+        margin: 0;
+        padding: 12px;
+      }
+      .row {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+      .dot {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--off);
+        flex: none;
+      }
+      .dot.on {
+        background: var(--ok);
+      }
+      .title {
+        font-weight: 600;
+        font-size: 12px;
+      }
+      .meta {
+        color: var(--muted);
+        margin-top: 8px;
+        padding-top: 8px;
+        border-top: 1px solid var(--line);
+      }
+      .meta div + div {
+        margin-top: 2px;
+      }
+      code {
+        font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="row">
+      <span class="dot" id="dot"></span>
+      <span class="title" id="status">Connecting…</span>
+    </div>
+    <div class="meta">
+      <div id="fonts">Reading local fonts…</div>
+      <div>Bridge: <code>ws://localhost:3056</code></div>
+      <div>Keep this window open while your agent works.</div>
+    </div>
+
+    <script>
+      const WS_URL = "ws://localhost:3056";
+      let ws = null;
+      let reconnectTimer = null;
+      const statusEl = document.getElementById("status");
+      const dotEl = document.getElementById("dot");
+      const fontsEl = document.getElementById("fonts");
+
+      function setStatus(text, connected) {
+        statusEl.textContent = text;
+        dotEl.className = connected ? "dot on" : "dot";
+      }
+
+      function connect() {
+        if (ws && (ws.readyState === WebSocket.OPEN || ws.readyState === WebSocket.CONNECTING)) return;
+
+        ws = new WebSocket(WS_URL);
+
+        ws.onopen = () => {
+          setStatus("Connected to MCP server", true);
+          if (reconnectTimer) {
+            clearInterval(reconnectTimer);
+            reconnectTimer = null;
+          }
+        };
+
+        ws.onmessage = (event) => {
+          try {
+            // Forward the command from the MCP server into the plugin sandbox.
+            parent.postMessage({ pluginMessage: JSON.parse(event.data) }, "*");
+          } catch (e) {
+            console.error("Failed to parse WS message:", e);
+          }
+        };
+
+        ws.onclose = () => {
+          setStatus("Waiting for MCP server…", false);
+          ws = null;
+          if (!reconnectTimer) reconnectTimer = setInterval(connect, 3000);
+        };
+
+        ws.onerror = () => {
+          // onclose fires right after this.
+        };
+      }
+
+      // Results and status messages coming back from the plugin sandbox.
+      window.onmessage = (event) => {
+        const msg = event.data && event.data.pluginMessage;
+        if (!msg) return;
+
+        if (msg.type === "font-count") {
+          fontsEl.textContent = msg.families + " font families available locally";
+          return;
+        }
+
+        if (!msg.id) return;
+        if (ws && ws.readyState === WebSocket.OPEN) ws.send(JSON.stringify(msg));
+      };
+
+      parent.postMessage({ pluginMessage: { type: "ui-ready" } }, "*");
+      connect();
+    </script>
+  </body>
+</html>

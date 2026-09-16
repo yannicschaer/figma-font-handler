@@ -1,0 +1,4 @@
+node_modules/
+dist/
+mcp/dist/
+.DS_Store

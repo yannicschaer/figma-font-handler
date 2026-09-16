@@ -1,0 +1,31 @@
+{
+  "name": "figma-font-handler",
+  "version": "1.0.0",
+  "description": "MCP server + Figma plugin that gives AI agents access to the fonts installed on your machine",
+  "type": "module",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yannicschaer/figma-font-handler.git"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "node mcp/build.mjs",
+    "dev": "node mcp/build.mjs --watch",
+    "test": "node test/sandbox.test.mjs",
+    "typecheck": "tsc -p mcp/tsconfig.json --noEmit && tsc -p mcp/figma-plugin/tsconfig.json"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "ws": "^8.18.0",
+    "zod": "^3.23.0"
+  },
+  "devDependencies": {
+    "@figma/plugin-typings": "^1.106.0",
+    "@types/ws": "^8.5.13",
+    "esbuild": "^0.28.2",
+    "typescript": "^5.7.0"
+  }
+}
